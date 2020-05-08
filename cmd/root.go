@@ -19,10 +19,13 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"sigs.k8s.io/etcdadm/apis"
+	"sigs.k8s.io/etcdadm/constants"
 	log "sigs.k8s.io/etcdadm/pkg/logrus"
 )
 
@@ -55,4 +58,15 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&LogLevel, "log-level", "l", "info", "set log level for output, permitted values debug, info, warn, error, fatal and panic")
+}
+
+func generateInitOrJoinCommonFlags(flagSet *pflag.FlagSet) {
+	flagSet.StringVar(&etcdAdmConfig.Name, "name", "", "etcd member name")
+	flagSet.StringVar(&etcdAdmConfig.Version, "version", constants.DefaultVersion, "etcd version")
+	flagSet.StringVar(&etcdAdmConfig.ReleaseURL, "release-url", constants.DefaultReleaseURL, "URL used to download etcd")
+	flagSet.StringVar(&etcdAdmConfig.CertificatesDir, "certs-dir", constants.DefaultCertificateDir, "certificates directory")
+	flagSet.StringVar(&etcdAdmConfig.InstallDir, "install-dir", constants.DefaultInstallDir, "install directory")
+	flagSet.StringSliceVar(&etcdAdmConfig.ServerCertSANs, "server-cert-extra-sans", etcdAdmConfig.ServerCertSANs, "optional extra Subject Alternative Names for the etcd server signing cert, can be multiple comma separated DNS names or IPs")
+	flagSet.StringArrayVar(&etcdAdmConfig.EtcdDiskPriorities, "disk-priorities", constants.DefaultEtcdDiskPriorities, "Setting etcd disk priority")
+	flagSet.IntVar(&etcdAdmConfig.GOMAXPROCS, "max-procs", runtime.NumCPU(), "Setting etcd maximal OS threads")
 }

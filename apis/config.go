@@ -192,7 +192,9 @@ func setDynamicDefaults(cfg *EtcdAdmConfig) error {
 	cfg.EtcdctlCertFile = filepath.Join(cfg.CertificatesDir, constants.EtcdctlClientCertName)
 	cfg.EtcdctlKeyFile = filepath.Join(cfg.CertificatesDir, constants.EtcdctlClientKeyName)
 
-	cfg.GOMAXPROCS = runtime.NumCPU()
+	if cfg.GOMAXPROCS == 0 {
+		cfg.GOMAXPROCS = runtime.NumCPU()
+	}
 
 	if err := DefaultPeerURLs(cfg); err != nil {
 		return err
